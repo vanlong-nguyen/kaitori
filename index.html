@@ -146,6 +146,11 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .sv{display:flex;gap:6px;align-items:center;border:1px solid var(--line);border-radius:8px;padding:6px 8px;margin-top:6px;background:var(--field)}
 .svn{flex:1;min-width:0}.svn b{display:block;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.svn small{font-size:11px;color:var(--mute)}
 .sv button{padding:6px 10px;font-size:13px}
+/* ===== Căn đều khối giá ===== */
+.s-grid{--rh:42px}.s-grid.c4{--rh:36px}
+.s-name{flex:1;display:flex;align-items:center;justify-content:center;padding:4px 8px 8px}
+.s-prices{display:flex;flex-direction:column;height:calc(var(--rows,1)*var(--rh));margin-top:auto}
+.s-pr{flex:1;align-items:center;padding:0 8px}
 /* ===== Tự động đổi giao diện theo màn hình ===== */
 #nav,.m{display:none}
 @media(max-width:860px){
@@ -245,12 +250,13 @@ function pinSrc(){
 }
 function drawSheet(){
   var s=$("sheet");s.className=$("theme").value+" "+$("bg").value;s.style.removeProperty("background-color");if($("bg").value==="bg-custom")s.style.setProperty("background-color",$("bgc").value,"important");s.style.setProperty("--c",$("color").value);s.style.setProperty("--t",$("tc").value);
+  var mr=1;items.forEach(function(it){var f=fl(it),n=(f.indexOf("t")>-1)+(f.indexOf("a")>-1)+(f.indexOf("b")>-1);if(n>mr)mr=n});
   var cards=items.map(function(it,idx){
     return '<div class="s-card" draggable="true" data-i="'+idx+'">'+(it.d?'<div class="s-badge">'+esc(it.d)+'</div>':'')+'<div class="frame '+$("frame").value+((it.rm&&it.cut)?' cut':'')+'">'+(it.img?'<img src="'+((it.rm&&it.cut)?it.cut:it.img)+'" alt="">':'写真')+'</div>'+
       '<div class="s-name">'+esc(it.n)+'</div>'+rows(it)+'</div>';
   }).join("");
   s.innerHTML='<div class="s-head"><div class="s-shop">'+(X.logo?'<img class="s-logo" src="'+X.logo+'" alt="">':'')+esc($("shop").value)+'</div><div class="s-right"><div class="s-title">'+esc($("title").value)+
-    '</div><div class="s-date">'+esc($("date").value)+'</div></div></div>'+($("slogan").value?'<div class="s-band"><span>'+esc($("slogan").value)+'</span></div>':'')+(X.banner?'<div class="s-banner"><img src="'+X.banner+'" alt=""></div>':'')+'<div class="s-grid c'+$("cols").value+'" style="grid-template-columns:repeat('+$("cols").value+',1fr)">'+cards+
+    '</div><div class="s-date">'+esc($("date").value)+'</div></div></div>'+($("slogan").value?'<div class="s-band"><span>'+esc($("slogan").value)+'</span></div>':'')+(X.banner?'<div class="s-banner"><img src="'+X.banner+'" alt=""></div>':'')+'<div class="s-grid c'+$("cols").value+'" style="grid-template-columns:repeat('+$("cols").value+',1fr);--rows:'+mr+'">'+cards+
     '</div><div class="s-foot"><div class="s-note">'+esc($("foot").value)+'</div>'+($("place").value.trim()?'<div class="s-place"><div class="s-pl"><img class="s-pin" src="'+pinSrc()+'" alt="">買取場所</div><div class="s-pt">'+esc($("place").value.trim())+'</div></div>':'')+'</div>';
   fit();save();
 }
@@ -328,11 +334,12 @@ function shrink(file,cb){
 function save(){saveIdb();clearTimeout(tm);tm=setTimeout(function(){var o={};IDS.forEach(function(i){o[i]=$(i).value});try{localStorage.setItem(KEY,JSON.stringify({items:items,f:o,x:X}))}catch(e){try{localStorage.setItem(KEY,JSON.stringify({items:items.map(function(x){var y=Object.assign({},x);y.img="";y.cut="";return y}),f:o,x:{logo:X.logo,banner:""}}))}catch(e2){}}},400)}
 function load(){try{var d=JSON.parse(localStorage.getItem(KEY));if(d&&d.items){items=d.items;if(d.x)X=d.x;IDS.forEach(function(i){if(d.f&&d.f[i]!=null&&i!=="q")$(i).value=d.f[i]})}}catch(e){}}
 function fl(it){return it.f===undefined?"ab":it.f}
+function pv(v){return String(v||"0").replace(/\s*[円¥￥]\s*$/,"")}
 function rows(it){
   var f=fl(it),h="";
-  if(f.indexOf("t")>-1)h+='<div class="s-pr s-t"><b>'+esc(it.t||"0")+'<small>円</small></b></div>';
-  if(f.indexOf("a")>-1)h+='<div class="s-pr"><span>シュリンクあり</span><b>'+esc(it.p||"0")+'<small>円</small></b></div>';
-  if(f.indexOf("b")>-1)h+='<div class="s-pr"><span>シュリンクなし</span><b>'+esc(it.b||"0")+'<small>円</small></b></div>';
+  if(f.indexOf("t")>-1)h+='<div class="s-pr s-t"><b>'+esc(pv(it.t))+'<small>円</small></b></div>';
+  if(f.indexOf("a")>-1)h+='<div class="s-pr"><span>シュリンクあり</span><b>'+esc(pv(it.p))+'<small>円</small></b></div>';
+  if(f.indexOf("b")>-1)h+='<div class="s-pr"><span>シュリンクなし</span><b>'+esc(pv(it.b))+'<small>円</small></b></div>';
   return h?'<div class="s-prices">'+h+'</div>':"";
 }
 function fields(it){
