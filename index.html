@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tạo 買取表 – Bảng giá thu mua</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+:root{--bg:#f3f1ec;--panel:#fff;--ink:#1c2233;--mute:#6b7185;--line:#d9d6cd;--accent:#1e4fa3;--field:#faf9f6;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14161c;--panel:#1d2029;--ink:#eceef5;--mute:#9aa0b4;--line:#323646;--field:#252937}}
+:root[data-theme="dark"]{--bg:#14161c;--panel:#1d2029;--ink:#eceef5;--mute:#9aa0b4;--line:#323646;--field:#252937}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans JP","Hiragino Sans","Yu Gothic",system-ui,sans-serif;line-height:1.5}
+.app{display:grid;grid-template-columns:340px 1fr;gap:20px;padding:20px;max-width:1300px;margin:0 auto}
+@media(max-width:860px){.app{grid-template-columns:1fr;padding:12px}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;align-self:start}
+h1{font-size:18px;margin:0 0 12px;font-weight:900}
+h2{font-size:14px;margin:16px 0 8px;font-weight:700}
+label{display:block;font-size:12px;color:var(--mute);margin:8px 0 3px}
+input,select{width:100%;padding:8px;border:1px solid var(--line);border-radius:6px;background:var(--field);color:var(--ink);font:inherit;font-size:14px}
+input[type=color]{padding:2px;height:36px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+button{font:inherit;font-size:14px;font-weight:700;border:0;border-radius:6px;padding:10px 14px;cursor:pointer;background:var(--accent);color:#fff}
+button.sec{background:transparent;color:var(--ink);border:1px solid var(--line)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.item{border:1px solid var(--line);border-radius:8px;padding:10px;margin-bottom:10px;display:grid;grid-template-columns:64px 1fr;gap:10px;background:var(--field)}
+.thumb{width:64px;height:64px;border:1px dashed var(--mute);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--mute);text-align:center;cursor:pointer;overflow:hidden;background-size:cover;background-position:center}
+.item .x{grid-column:1/-1;background:transparent;color:var(--mute);border:1px solid var(--line);padding:4px;font-size:12px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.stage{min-width:0}
+#fit{margin:0 auto}
+#sheet{transform-origin:top left}
+.actions{position:sticky;bottom:0;background:var(--panel);padding:10px 0 calc(10px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);z-index:5}
+@media(max-width:860px){input,select{font-size:16px}.actions button{flex:1 1 40%}}
+@media print{.panel{display:none}.app{display:block;padding:0}#fit{width:auto!important;height:auto!important}#sheet{transform:none!important}}
+.sw{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.sw button{width:24px;height:24px;padding:0;border-radius:50%;border:2px solid var(--panel);box-shadow:0 0 0 1px var(--line)}
+/* ===== Tờ 買取表 (luôn nền sáng để xuất ảnh) ===== */
+#sheet{--c:#1e4fa3;width:900px;background:#fffdf6;color:#1c1c1c;padding:34px 36px 28px;border:6px solid var(--c);font-family:"Noto Sans JP","Hiragino Sans","Yu Gothic",sans-serif}
+.s-head{text-align:center;border-bottom:4px double var(--c);padding-bottom:14px;margin-bottom:20px}
+.s-shop{font-size:20px;font-weight:700}
+.s-title{font-size:64px;font-weight:900;letter-spacing:.3em;color:var(--c);line-height:1.1;margin:4px 0 2px;padding-left:.3em}
+.s-date{font-size:15px}
+.s-grid{display:grid;gap:16px}
+.s-card{border:2px solid var(--c);background:#fff;display:flex;flex-direction:column}
+.frame{aspect-ratio:1/1;background:#eee6d4;display:flex;align-items:center;justify-content:center;color:#a99f86;font-size:14px;background-size:cover;background-position:center;margin:8px}
+.f-double{border:3px double var(--c)}
+.f-round{border-radius:50%;border:3px solid var(--c)}
+.f-plain{border:1px solid #ccc}
+.f-corner{border:2px solid var(--c);outline:2px solid var(--c);outline-offset:3px;margin:11px}
+.s-name{text-align:center;font-weight:700;padding:2px 8px 8px;font-size:17px;min-height:2.6em;line-height:1.35}
+.s-price{background:var(--c);color:#fff;text-align:center;font-weight:900;font-size:26px;padding:6px 4px}
+.s-price small{font-size:14px;font-weight:700}
+.c4 .s-name{font-size:14px}.c4 .s-price{font-size:20px}.c4 .s-price small{font-size:12px}
+.s-foot{margin-top:18px;font-size:13px;text-align:center;border-top:1px solid var(--c);padding-top:10px;white-space:pre-line}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="panel">
+    <h1>買取表 – Tạo bảng giá thu mua</h1>
+    <label>Tên cửa hàng</label><input id="shop" value="○○リサイクルショップ">
+    <label>Tiêu đề</label><input id="title" value="買取表">
+    <div class="row">
+      <div><label>Ngày áp dụng</label><input id="date" value="2026年11月20日"></div>
+      <div><label>Số cột</label><select id="cols"><option>2</option><option>3</option><option selected>4</option></select></div>
+    </div>
+    <div class="row">
+      <div><label>Màu chủ đạo</label><input id="color" type="color" value="#1e4fa3"><div id="sw" class="sw"></div></div>
+      <div><label>Kiểu khung ảnh</label>
+        <select id="frame"><option value="f-double">Viền đôi</option><option value="f-corner">Viền kép</option><option value="f-round">Tròn</option><option value="f-plain">Đơn giản</option></select></div>
+    </div>
+    <label>Ghi chú cuối bảng</label>
+    <input id="foot" value="※価格は状態により変動します。お気軽にご相談ください。">
+    <h2>Sản phẩm</h2>
+    <div id="list"></div>
+    <div class="actions">
+      <button id="grid16" class="sec">Tạo bảng 4×4 (16 ô)</button>
+      <button id="add">+ Thêm sản phẩm</button>
+      <button id="png">Tải ảnh PNG</button>
+      <button id="print" class="sec">In</button>
+      <button id="reset" class="sec">Xóa hết</button>
+    </div>
+    <p style="font-size:12px;color:var(--mute)">Bấm vào ô vuông để chọn ảnh. Ảnh được xử lý ngay trên máy bạn, không tải lên máy chủ. Nội dung tự lưu trên thiết bị này.</p>
+  </div>
+  <div class="stage"><div id="fit"><div id="sheet"></div></div></div>
+</div>
+<script>
+var items=[
+ {n:"Nintendo Switch 本体",p:"20,000",img:""},
+ {n:"iPhone 14 128GB",p:"60,000",img:""},
+ {n:"ブランドバッグ",p:"50,000",img:""}
+];
+while(items.length<16)items.push({n:"商品名",p:"0",img:""});
+var $=function(i){return document.getElementById(i)};
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function drawSheet(){
+  var s=$("sheet");s.style.setProperty("--c",$("color").value);
+  var cards=items.map(function(it){
+    var bg=it.img?' style="background-image:url('+it.img+')"':'';
+    return '<div class="s-card"><div class="frame '+$("frame").value+'"'+bg+'>'+(it.img?'':'写真')+'</div>'+
+      '<div class="s-name">'+esc(it.n)+'</div><div class="s-price">'+esc(it.p)+' <small>円</small></div></div>';
+  }).join("");
+  s.innerHTML='<div class="s-head"><div class="s-shop">'+esc($("shop").value)+'</div><div class="s-title">'+esc($("title").value)+
+    '</div><div class="s-date">'+esc($("date").value)+'</div></div><div class="s-grid c'+$("cols").value+'" style="grid-template-columns:repeat('+$("cols").value+',1fr)">'+cards+
+    '</div><div class="s-foot">'+esc($("foot").value)+'</div>';
+  fit();save();
+}
+function drawList(){
+  var l=$("list");l.innerHTML="";
+  items.forEach(function(it,i){
+    var d=document.createElement("div");d.className="item";
+    d.innerHTML='<label class="thumb" style="margin:0'+(it.img?';background-image:url('+it.img+')':'')+'">'+(it.img?'':'Chọn ảnh')+
+      '<input type="file" accept="image/*" hidden></label><div><label style="margin-top:0">Tên</label><input class="n" value="'+esc(it.n)+
+      '"><label>Giá (円)</label><input class="p" value="'+esc(it.p)+'"></div><button class="x">Xóa</button>';
+    d.querySelector(".n").oninput=function(e){it.n=e.target.value;drawSheet()};
+    d.querySelector(".p").oninput=function(e){it.p=e.target.value;drawSheet()};
+    d.querySelector("input[type=file]").onchange=function(e){
+      var f=e.target.files[0];if(!f)return;
+      shrink(f,function(u){it.img=u;drawList();drawSheet()})};
+    d.querySelector(".x").onclick=function(){items.splice(i,1);drawList();drawSheet()};
+    l.appendChild(d);
+  });
+}
+["shop","title","date","cols","color","frame","foot"].forEach(function(id){$(id).oninput=drawSheet});
+$("add").onclick=function(){items.push({n:"商品名",p:"0",img:""});drawList();drawSheet()};
+$("print").onclick=function(){window.print()};
+$("grid16").onclick=function(){$("cols").value="4";while(items.length<16)items.push({n:"商品名",p:"0",img:""});drawList();drawSheet()};
+function exportPng(){
+  var b=$("png"),s=$("sheet"),t=s.style.transform;b.textContent="Đang tạo…";
+  s.style.transform="none";
+  html2canvas(s,{scale:2,backgroundColor:"#fffdf6",scrollX:0,scrollY:0}).then(function(c){
+    s.style.transform=t;
+    c.toBlob(function(bl){
+      var f=new File([bl],"kaitori.png",{type:"image/png"});
+      if(navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f]}).catch(function(){})}
+      else{var a=document.createElement("a");a.download="kaitori.png";a.href=URL.createObjectURL(bl);a.click()}
+      b.textContent="Tải ảnh PNG";
+    },"image/png");
+  }).catch(function(){s.style.transform=t;b.textContent="Tải ảnh PNG";alert("Không tạo được ảnh. Hãy thử nút In → Lưu PDF.")});
+}
+$("png").onclick=exportPng;
+["#1e4fa3","#1f7a4d","#b3261e","#d9650b","#6a3fa0","#c2386f","#222222"].forEach(function(c){
+  var b=document.createElement("button");b.style.background=c;b.title=c;b.setAttribute("aria-label","Màu "+c);
+  b.onclick=function(){$("color").value=c;drawSheet()};$("sw").appendChild(b)});
+var IDS=["shop","title","date","cols","color","frame","foot"],KEY="kaitori-v1",tm;
+function fit(){
+  var s=$("sheet"),f=$("fit"),w=f.parentNode.clientWidth||900,k=Math.min(1,w/900);
+  s.style.transform="scale("+k+")";f.style.width=900*k+"px";f.style.height=s.offsetHeight*k+"px";
+}
+window.addEventListener("resize",fit);
+function shrink(file,cb){
+  var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){
+    var k=Math.min(1,700/Math.max(im.width,im.height)),c=document.createElement("canvas");
+    c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);
+    c.getContext("2d").drawImage(im,0,0,c.width,c.height);cb(c.toDataURL("image/jpeg",0.85))};im.src=r.result};
+  r.readAsDataURL(file);
+}
+function save(){clearTimeout(tm);tm=setTimeout(function(){try{var o={};IDS.forEach(function(i){o[i]=$(i).value});localStorage.setItem(KEY,JSON.stringify({items:items,f:o}))}catch(e){}},400)}
+function load(){try{var d=JSON.parse(localStorage.getItem(KEY));if(d&&d.items){items=d.items;IDS.forEach(function(i){if(d.f&&d.f[i]!=null)$(i).value=d.f[i]})}}catch(e){}}
+$("reset").onclick=function(){if(confirm("Xóa hết nội dung đã nhập?")){try{localStorage.removeItem(KEY)}catch(e){}location.reload()}};
+load();drawList();drawSheet();
+if(document.fonts)document.fonts.ready.then(fit);
+</script>
+</body>
+</html>
