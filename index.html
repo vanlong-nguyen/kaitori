@@ -81,6 +81,62 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .obox p{font-size:13px;margin:8px 0 0}
 .obox .btn{display:inline-block;background:var(--accent);color:#fff;font-weight:700;padding:10px 14px;border-radius:6px;text-decoration:none;font-size:14px}
 .oa{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+
+/* ===== Kiểu khung thêm ===== */
+.f-thick{border:6px solid var(--c)}
+.f-rounded{border:3px solid var(--c);border-radius:18px}
+.f-dashed{border:3px dashed var(--c)}
+.f-shadow{border:2px solid var(--c);box-shadow:6px 6px 0 var(--c);margin:8px 14px 14px 8px}
+.f-polaroid{border:10px solid #fff;border-bottom-width:28px;box-shadow:0 2px 8px rgba(0,0,0,.4);margin:12px}
+.f-gold{border:4px solid #c9a24b;box-shadow:0 0 0 2px #fff,0 0 0 4px #c9a24b;margin:12px}
+.f-arch{border:3px solid var(--c);border-radius:50% 50% 0 0/36% 36% 0 0}
+.f-ring{border-radius:50%;border:6px double var(--c)}
+/* ===== Kiểu thiết kế ===== */
+.s-band{text-align:center;margin:-6px 0 18px}
+.s-band span{display:inline-block;background:var(--c);color:#fff;font-size:24px;font-weight:900;letter-spacing:.12em;padding:6px 34px;border-radius:30px}
+.t-pop{background:#fff4c2!important;background-image:linear-gradient(90deg,rgba(255,255,255,.55) 50%,transparent 50%)!important;background-size:36px 100%!important;border-radius:22px;border-width:8px!important}
+.t-pop .s-head{border-bottom:6px solid var(--c)}
+.t-pop .s-shop{color:var(--c)}
+.t-pop .s-title{color:#1c1c1c;letter-spacing:.1em}
+.t-pop .s-card{border:3px solid #1c1c1c;border-radius:16px;box-shadow:5px 5px 0 #1c1c1c;overflow:hidden}
+.t-pop .s-name{font-weight:900}
+.t-pop .s-band span{background:#e83a3a;border:3px solid #1c1c1c;box-shadow:4px 4px 0 #1c1c1c}
+.t-lux{background:#15130f!important;color:#e9d9a6!important;border-color:#c9a24b!important}
+.t-lux .s-head{border-bottom:4px double #c9a24b}
+.t-lux .s-shop,.t-lux .s-title,.t-lux .s-date,.t-lux .s-foot{color:#e9d9a6}
+.t-lux .s-card{background:#201c14;border:2px solid #c9a24b}
+.t-lux .s-name{color:#f4e8c1}
+.t-lux .frame{background:#2b2519;color:#7d6f4b}
+.t-lux .s-prices{background:#c9a24b;color:#15130f}
+.t-lux .s-pr+.s-pr{border-top-color:rgba(21,19,15,.4)}
+.t-lux .s-band span{background:linear-gradient(90deg,#a9822b,#e9d08a,#a9822b);color:#15130f;border-radius:4px}
+.t-lux .s-foot{border-top-color:#c9a24b}
+.t-sakura{background:#fff3f6!important;border-radius:22px;border-width:5px!important}
+.t-sakura .s-head{border-bottom:3px dotted var(--c)}
+.t-sakura .s-card{border:2px dashed var(--c);border-radius:14px;overflow:hidden}
+.t-sakura .s-band span{background:#fff;color:var(--c);border:3px solid var(--c)}
+.t-sakura .s-band span:before{content:"✿ "}.t-sakura .s-band span:after{content:" ✿"}
+.t-pop .s-band span:before{content:"★ "}.t-pop .s-band span:after{content:" ★"}
+.t-lux .s-band span:before{content:"◆ "}.t-lux .s-band span:after{content:" ◆"}
+.imgb{display:flex;gap:6px;flex-wrap:wrap}.imgb button{padding:8px 10px;font-size:13px}
+.s-card{position:relative}
+.s-logo{height:64px;width:auto;vertical-align:middle;margin-right:14px}
+.s-banner{margin:0 0 18px}.s-banner img{width:100%;max-height:180px;object-fit:cover;display:block}
+.s-badge{position:absolute;top:6px;left:6px;z-index:2;background:#e83a3a;color:#fff;font-weight:900;font-size:14px;padding:3px 10px;border-radius:4px;line-height:1.3}
+.c4 .s-badge{font-size:12px;padding:2px 8px}
+.t-lux .s-badge{background:#c9a24b;color:#15130f}
+/* ===== Nền bảng ===== */
+.bg-cream:not(.t-lux){background:#fffdf6!important}
+.bg-white:not(.t-lux){background:#fff!important}
+.bg-kraft:not(.t-lux){background:#ead9b9!important}
+.bg-stripe:not(.t-lux){background:#fffdf6 linear-gradient(90deg,rgba(0,0,0,.055) 50%,transparent 50%)!important;background-size:40px 100%!important}
+.bg-grid:not(.t-lux){background:#fffdf6 linear-gradient(rgba(0,0,0,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.07) 1px,transparent 1px)!important;background-size:26px 26px!important}
+.bg-sky:not(.t-lux){background:linear-gradient(180deg,#d9eeff,#fff 70%)!important}
+.bg-pink:not(.t-lux){background:linear-gradient(180deg,#ffe3ee,#fff 70%)!important}
+.bg-mint:not(.t-lux){background:linear-gradient(180deg,#d8f5e6,#fff 70%)!important}
+.bg-sun:not(.t-lux){background:linear-gradient(180deg,#fff0a8,#fff 70%)!important}
+.bg-lav:not(.t-lux){background:linear-gradient(180deg,#e7defa,#fff 70%)!important}
+.bg-custom:not(.t-lux){background-image:none!important}
 /* ===== Tự động đổi giao diện theo màn hình ===== */
 #nav,.m{display:none}
 @media(max-width:860px){
@@ -116,8 +172,22 @@ body{padding-bottom:calc(76px + env(safe-area-inset-bottom,0px))}
     <div class="row">
       <div><label>Màu chủ đạo</label><input id="color" type="color" value="#1e4fa3"><div id="sw" class="sw"></div></div>
       <div><label>Kiểu khung ảnh</label>
-        <select id="frame"><option value="f-double">Viền đôi</option><option value="f-corner">Viền kép</option><option value="f-round">Tròn</option><option value="f-plain">Đơn giản</option></select></div>
+        <select id="frame"><option value="f-double">Viền đôi</option><option value="f-corner">Viền kép</option><option value="f-round">Tròn</option><option value="f-plain">Đơn giản</option><option value="f-thick">Viền dày</option><option value="f-rounded">Bo góc</option><option value="f-dashed">Nét đứt</option><option value="f-shadow">Bóng đổ</option><option value="f-polaroid">Polaroid</option><option value="f-gold">Vàng</option><option value="f-arch">Vòm</option><option value="f-ring">Vòng đôi</option></select></div>
     </div>
+    <div class="row">
+      <div><label>Kiểu thiết kế</label>
+        <select id="theme"><option value="t-classic">Cổ điển</option><option value="t-pop">Pop vui</option><option value="t-lux">Sang trọng (đen vàng)</option><option value="t-sakura">Sakura nhẹ nhàng</option></select></div>
+      <div><label>Khẩu hiệu</label><input id="slogan" value="高価買取中！"></div>
+    </div>
+    <div class="row">
+      <div><label>Nền bảng</label>
+        <select id="bg"><option value="">Theo kiểu thiết kế</option><option value="bg-cream">Kem</option><option value="bg-white">Trắng</option><option value="bg-kraft">Giấy kraft</option><option value="bg-stripe">Sọc dọc</option><option value="bg-grid">Ô vuông</option><option value="bg-sky">Xanh trời</option><option value="bg-pink">Hồng phấn</option><option value="bg-mint">Xanh bạc hà</option><option value="bg-sun">Vàng nắng</option><option value="bg-lav">Tím nhạt</option><option value="bg-custom">Màu tự chọn…</option></select></div>
+      <div><label>Màu nền tự chọn</label><input id="bgc" type="color" value="#fff1d6"></div>
+    </div>
+    <label>Hình trang trí</label>
+    <div class="imgb"><button type="button" id="logoB" class="sec">Logo cửa hàng</button><button type="button" id="banB" class="sec">Ảnh banner</button><button type="button" id="clrImg" class="sec">Bỏ hình</button>
+      <input id="logof" type="file" accept="image/*" hidden><input id="banf" type="file" accept="image/*" hidden></div>
+    <datalist id="bdl"><option value="高価買取"><option value="強化買取"><option value="NEW"><option value="値上がり"><option value="品薄"><option value="要確認"><option value="🔥人気"></datalist>
     <label>Ghi chú cuối bảng</label>
     <input id="foot" value="※価格は状態により変動します。お気軽にご相談ください。">
     <label>Chất lượng ảnh tải về</label>
@@ -153,13 +223,13 @@ while(items.length<16)items.push({n:"商品名",t:"0",f:"t",img:""});
 var $=function(i){return document.getElementById(i)};
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
 function drawSheet(){
-  var s=$("sheet");s.style.setProperty("--c",$("color").value);
+  var s=$("sheet");s.className=$("theme").value+" "+$("bg").value;s.style.removeProperty("background-color");if($("bg").value==="bg-custom")s.style.setProperty("background-color",$("bgc").value,"important");s.style.setProperty("--c",$("color").value);
   var cards=items.map(function(it,idx){
-    return '<div class="s-card" draggable="true" data-i="'+idx+'"><div class="frame '+$("frame").value+((it.rm&&it.cut)?' cut':'')+'">'+(it.img?'<img src="'+((it.rm&&it.cut)?it.cut:it.img)+'" alt="">':'写真')+'</div>'+
+    return '<div class="s-card" draggable="true" data-i="'+idx+'">'+(it.d?'<div class="s-badge">'+esc(it.d)+'</div>':'')+'<div class="frame '+$("frame").value+((it.rm&&it.cut)?' cut':'')+'">'+(it.img?'<img src="'+((it.rm&&it.cut)?it.cut:it.img)+'" alt="">':'写真')+'</div>'+
       '<div class="s-name">'+esc(it.n)+'</div>'+rows(it)+'</div>';
   }).join("");
-  s.innerHTML='<div class="s-head"><div class="s-shop">'+esc($("shop").value)+'</div><div class="s-right"><div class="s-title">'+esc($("title").value)+
-    '</div><div class="s-date">'+esc($("date").value)+'</div></div></div><div class="s-grid c'+$("cols").value+'" style="grid-template-columns:repeat('+$("cols").value+',1fr)">'+cards+
+  s.innerHTML='<div class="s-head"><div class="s-shop">'+(X.logo?'<img class="s-logo" src="'+X.logo+'" alt="">':'')+esc($("shop").value)+'</div><div class="s-right"><div class="s-title">'+esc($("title").value)+
+    '</div><div class="s-date">'+esc($("date").value)+'</div></div></div>'+($("slogan").value?'<div class="s-band"><span>'+esc($("slogan").value)+'</span></div>':'')+(X.banner?'<div class="s-banner"><img src="'+X.banner+'" alt=""></div>':'')+'<div class="s-grid c'+$("cols").value+'" style="grid-template-columns:repeat('+$("cols").value+',1fr)">'+cards+
     '</div><div class="s-foot">'+esc($("foot").value)+'</div>';
   fit();save();
 }
@@ -172,6 +242,7 @@ function drawList(){
       '">'+fields(it)+'</div><div class="mv"><button class="up" aria-label="Đưa lên trước"><span class="d">↑</span><span class="m">←</span></button><button class="dn" aria-label="Đưa xuống sau"><span class="d">↓</span><span class="m">→</span></button><button class="x">Xóa</button></div>';
     d.querySelector(".n").oninput=function(e){it.n=e.target.value;drawSheet()};
     d.querySelectorAll(".chip").forEach(function(c){c.onclick=function(){var k=c.dataset.k;if(k==="r"){toggleRm(it);return}var f=fl(it);it.f=f.indexOf(k)>-1?f.replace(k,""):f+k;drawList();drawSheet()}});
+    var bd=d.querySelector(".bd");if(bd)bd.oninput=function(){it.d=bd.value;drawSheet()};
     d.querySelectorAll("input.pr").forEach(function(x){x.oninput=function(){it[x.dataset.f]=x.value;drawSheet()}});
     d.querySelector("input[type=file]").onchange=function(e){
       var f=e.target.files[0];if(!f)return;
@@ -182,7 +253,7 @@ function drawList(){
     l.appendChild(d);
   });
 }
-["shop","title","date","cols","color","frame","foot"].forEach(function(id){$(id).oninput=drawSheet});
+["shop","title","date","cols","color","frame","theme","slogan","bg","bgc","foot"].forEach(function(id){$(id).oninput=drawSheet;$(id).onchange=drawSheet});
 $("add").onclick=function(){items.push({n:"商品名",t:"0",f:"t",img:""});drawList();drawSheet()};
 $("print").onclick=function(){window.print()};
 $("grid16").onclick=function(){$("cols").value="4";while(items.length<16)items.push({n:"商品名",t:"0",f:"t",img:""});drawList();drawSheet()};
@@ -213,10 +284,11 @@ function exportPng(){
 }
 $("png").onclick=exportPng;
 $("ox").onclick=function(){$("out").hidden=true};
-["#1e4fa3","#1f7a4d","#b3261e","#d9650b","#6a3fa0","#c2386f","#222222"].forEach(function(c){
+["#1e4fa3","#14274e","#1f9bd7","#0e8a8a","#1f7a4d","#6aa800","#b8860b","#d9650b","#b3261e","#ff4f7b","#c2386f","#6a3fa0","#7a4a2a","#222222"].forEach(function(c){
   var b=document.createElement("button");b.style.background=c;b.title=c;b.setAttribute("aria-label","Màu "+c);
   b.onclick=function(){$("color").value=c;drawSheet()};$("sw").appendChild(b)});
-var IDS=["shop","title","date","cols","color","frame","foot","q","tol"],KEY="kaitori-v1",tm;
+var X={logo:"",banner:""};
+var IDS=["shop","title","date","cols","color","frame","theme","slogan","bg","bgc","foot","q","tol"],KEY="kaitori-v1",tm;
 function fit(){
   var s=$("sheet"),f=$("fit"),w=f.parentNode.clientWidth||900,k=Math.min(1,w/900);
   s.style.transform="scale("+k+")";f.style.width=900*k+"px";f.style.height=s.offsetHeight*k+"px";
@@ -229,8 +301,8 @@ function shrink(file,cb){
     c.getContext("2d").drawImage(im,0,0,c.width,c.height);cb(c.toDataURL("image/jpeg",0.9))};im.src=r.result};
   r.readAsDataURL(file);
 }
-function save(){clearTimeout(tm);tm=setTimeout(function(){var o={};IDS.forEach(function(i){o[i]=$(i).value});try{localStorage.setItem(KEY,JSON.stringify({items:items,f:o}))}catch(e){try{localStorage.setItem(KEY,JSON.stringify({items:items.map(function(x){var y=Object.assign({},x);y.img="";y.cut="";return y}),f:o}))}catch(e2){}}},400)}
-function load(){try{var d=JSON.parse(localStorage.getItem(KEY));if(d&&d.items){items=d.items;IDS.forEach(function(i){if(d.f&&d.f[i]!=null&&i!=="q")$(i).value=d.f[i]})}}catch(e){}}
+function save(){clearTimeout(tm);tm=setTimeout(function(){var o={};IDS.forEach(function(i){o[i]=$(i).value});try{localStorage.setItem(KEY,JSON.stringify({items:items,f:o,x:X}))}catch(e){try{localStorage.setItem(KEY,JSON.stringify({items:items.map(function(x){var y=Object.assign({},x);y.img="";y.cut="";return y}),f:o,x:{logo:X.logo,banner:""}}))}catch(e2){}}},400)}
+function load(){try{var d=JSON.parse(localStorage.getItem(KEY));if(d&&d.items){items=d.items;if(d.x)X=d.x;IDS.forEach(function(i){if(d.f&&d.f[i]!=null&&i!=="q")$(i).value=d.f[i]})}}catch(e){}}
 function fl(it){return it.f===undefined?"ab":it.f}
 function rows(it){
   var f=fl(it),h="";
@@ -244,6 +316,7 @@ function fields(it){
   M.forEach(function(c){var on=f.indexOf(c[0])>-1;h+='<button type="button" class="chip'+(on?' on':'')+'" data-k="'+c[0]+'">'+(on?'✓ ':'+ ')+c[2]+'</button>'});
   h+='<button type="button" class="chip'+(it.rm?' on':'')+'" data-k="r"'+(it.img?'':' disabled')+'>'+(it.rm?'✓ ':'+ ')+'Xóa nền</button>';
   h+='</div>';
+  h+='<label>Nhãn trên ảnh</label><input class="bd" list="bdl" placeholder="Không có" value="'+esc(it.d||"")+'">';
   M.forEach(function(c){if(f.indexOf(c[0])>-1)h+='<label>'+c[2]+' (円)</label><input class="pr" data-f="'+c[1]+'" value="'+esc(it[c[1]]||"0")+'">'});
   return h;
 }
@@ -294,6 +367,18 @@ $("tol").oninput=function(){
   tt=setTimeout(function(){var L=items.filter(function(i){return i.rm&&i.img}),n=0;if(!L.length){save();return}
     L.forEach(function(it){cutOut(it,function(){if(++n===L.length){drawList();drawSheet()}})})},350);
 };
+function readImg(file,max,cb){
+  var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){
+    var k=Math.min(1,max/Math.max(im.width,im.height)),c=document.createElement("canvas");
+    c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext("2d").drawImage(im,0,0,c.width,c.height);
+    cb(/png|webp|gif/i.test(file.type)?c.toDataURL("image/png"):c.toDataURL("image/jpeg",0.9))};im.src=r.result};
+  r.readAsDataURL(file);
+}
+$("logoB").onclick=function(){$("logof").click()};
+$("banB").onclick=function(){$("banf").click()};
+$("logof").onchange=function(e){var f=e.target.files[0];e.target.value="";if(f)readImg(f,500,function(u){X.logo=u;drawSheet()})};
+$("banf").onchange=function(e){var f=e.target.files[0];e.target.value="";if(f)readImg(f,1600,function(u){X.banner=u;drawSheet()})};
+$("clrImg").onclick=function(){X.logo="";X.banner="";drawSheet()};
 $("reset").onclick=function(){if(confirm("Xóa hết nội dung đã nhập?")){try{localStorage.removeItem(KEY)}catch(e){}location.reload()}};
 $("bulk").onclick=function(){$("bulkf").click()};
 $("bulkf").onchange=function(e){
