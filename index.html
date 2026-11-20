@@ -31,6 +31,17 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .item .x{grid-column:1/-1;background:transparent;color:var(--mute);border:1px solid var(--line);padding:4px;font-size:12px}
 .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
 .mv{grid-column:1/-1;display:flex;gap:6px}.mv button{flex:1;background:transparent;color:var(--ink);border:1px solid var(--line);padding:6px;font-size:13px}
+.s-prices{background:var(--c);color:#fff}
+.s-pr{display:flex;justify-content:space-between;align-items:baseline;padding:5px 8px;gap:4px}
+.s-pr+.s-pr{border-top:1px solid rgba(255,255,255,.45)}
+.s-pr span{font-size:13px;font-weight:700}
+.s-pr b{font-size:22px;font-weight:900;white-space:nowrap}
+.s-pr small{font-size:12px;margin-left:2px}
+.c4 .s-pr span{font-size:11px}.c4 .s-pr b{font-size:18px}
+.chips{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
+.chip{padding:4px 8px;font-size:12px;background:transparent;color:var(--mute);border:1px solid var(--line);border-radius:14px}
+.chip.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.s-t{justify-content:center}.s-t b{font-size:26px}.c4 .s-t b{font-size:22px}
 .s-card{cursor:grab}
 .stage{min-width:0}
 #fit{margin:0 auto}
@@ -71,7 +82,7 @@ body{padding-bottom:calc(76px + env(safe-area-inset-bottom,0px))}
 #list{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .item{grid-template-columns:1fr;margin:0;padding:8px}
 .thumb{width:100%;height:auto;aspect-ratio:1/1;font-size:13px}
-.item input.n,.item input.p{padding:10px 8px}
+.item input.n,.item input.pr{padding:10px 8px}.chip{padding:8px 10px}
 .mv button{padding:10px 0;font-size:16px}
 .actions{position:static;border:0;padding:12px 0}
 .actions button{padding:12px 10px}
@@ -117,11 +128,11 @@ body{padding-bottom:calc(76px + env(safe-area-inset-bottom,0px))}
 <nav id="nav"><button data-v="edit">Sửa</button><button data-v="view">Xem bảng</button><button id="bulk2">+ Ảnh</button><button id="png2">Tải ảnh</button></nav>
 <script>
 var items=[
- {n:"Nintendo Switch 本体",p:"20,000",img:""},
- {n:"iPhone 14 128GB",p:"60,000",img:""},
- {n:"ブランドバッグ",p:"50,000",img:""}
+ {n:"Nintendo Switch 本体",p:"20,000",b:"18,000",img:""},
+ {n:"iPhone 14 128GB",p:"60,000",b:"55,000",img:""},
+ {n:"ブランドバッグ",p:"50,000",b:"45,000",img:""}
 ];
-while(items.length<16)items.push({n:"商品名",p:"0",img:""});
+while(items.length<16)items.push({n:"商品名",t:"0",f:"t",img:""});
 var $=function(i){return document.getElementById(i)};
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
 function drawSheet(){
@@ -129,7 +140,7 @@ function drawSheet(){
   var cards=items.map(function(it,idx){
     var bg=it.img?' style="background-image:url('+it.img+')"':'';
     return '<div class="s-card" draggable="true" data-i="'+idx+'"><div class="frame '+$("frame").value+'"'+bg+'>'+(it.img?'':'写真')+'</div>'+
-      '<div class="s-name">'+esc(it.n)+'</div><div class="s-price">'+esc(it.p)+' <small>円</small></div></div>';
+      '<div class="s-name">'+esc(it.n)+'</div>'+rows(it)+'</div>';
   }).join("");
   s.innerHTML='<div class="s-head"><div class="s-shop">'+esc($("shop").value)+'</div><div class="s-title">'+esc($("title").value)+
     '</div><div class="s-date">'+esc($("date").value)+'</div></div><div class="s-grid c'+$("cols").value+'" style="grid-template-columns:repeat('+$("cols").value+',1fr)">'+cards+
@@ -142,9 +153,10 @@ function drawList(){
     var d=document.createElement("div");d.className="item";
     d.innerHTML='<label class="thumb" style="margin:0'+(it.img?';background-image:url('+it.img+')':'')+'">'+(it.img?'':'Chọn ảnh')+
       '<input type="file" accept="image/*" hidden></label><div><label style="margin-top:0">Tên</label><input class="n" value="'+esc(it.n)+
-      '"><label>Giá (円)</label><input class="p" value="'+esc(it.p)+'"></div><div class="mv"><button class="up" aria-label="Đưa lên trước"><span class="d">↑</span><span class="m">←</span></button><button class="dn" aria-label="Đưa xuống sau"><span class="d">↓</span><span class="m">→</span></button><button class="x">Xóa</button></div>';
+      '">'+fields(it)+'</div><div class="mv"><button class="up" aria-label="Đưa lên trước"><span class="d">↑</span><span class="m">←</span></button><button class="dn" aria-label="Đưa xuống sau"><span class="d">↓</span><span class="m">→</span></button><button class="x">Xóa</button></div>';
     d.querySelector(".n").oninput=function(e){it.n=e.target.value;drawSheet()};
-    d.querySelector(".p").oninput=function(e){it.p=e.target.value;drawSheet()};
+    d.querySelectorAll(".chip").forEach(function(c){c.onclick=function(){var k=c.dataset.k,f=fl(it);it.f=f.indexOf(k)>-1?f.replace(k,""):f+k;drawList();drawSheet()}});
+    d.querySelectorAll("input.pr").forEach(function(x){x.oninput=function(){it[x.dataset.f]=x.value;drawSheet()}});
     d.querySelector("input[type=file]").onchange=function(e){
       var f=e.target.files[0];if(!f)return;
       shrink(f,function(u){it.img=u;drawList();drawSheet()})};
@@ -155,9 +167,9 @@ function drawList(){
   });
 }
 ["shop","title","date","cols","color","frame","foot"].forEach(function(id){$(id).oninput=drawSheet});
-$("add").onclick=function(){items.push({n:"商品名",p:"0",img:""});drawList();drawSheet()};
+$("add").onclick=function(){items.push({n:"商品名",t:"0",f:"t",img:""});drawList();drawSheet()};
 $("print").onclick=function(){window.print()};
-$("grid16").onclick=function(){$("cols").value="4";while(items.length<16)items.push({n:"商品名",p:"0",img:""});drawList();drawSheet()};
+$("grid16").onclick=function(){$("cols").value="4";while(items.length<16)items.push({n:"商品名",t:"0",f:"t",img:""});drawList();drawSheet()};
 function exportPng(){
   var b=$("png"),s=$("sheet"),t=s.style.transform,q=Math.min(+$("q").value,Math.sqrt(16e6/(900*s.offsetHeight)));b.textContent="Đang tạo…";
   s.style.transform="none";
@@ -190,6 +202,21 @@ function shrink(file,cb){
 }
 function save(){clearTimeout(tm);tm=setTimeout(function(){try{var o={};IDS.forEach(function(i){o[i]=$(i).value});localStorage.setItem(KEY,JSON.stringify({items:items,f:o}))}catch(e){}},400)}
 function load(){try{var d=JSON.parse(localStorage.getItem(KEY));if(d&&d.items){items=d.items;IDS.forEach(function(i){if(d.f&&d.f[i]!=null)$(i).value=d.f[i]})}}catch(e){}}
+function fl(it){return it.f===undefined?"ab":it.f}
+function rows(it){
+  var f=fl(it),h="";
+  if(f.indexOf("t")>-1)h+='<div class="s-pr s-t"><b>'+esc(it.t||"0")+'<small>円</small></b></div>';
+  if(f.indexOf("a")>-1)h+='<div class="s-pr"><span>シュリンクあり</span><b>'+esc(it.p||"0")+'<small>円</small></b></div>';
+  if(f.indexOf("b")>-1)h+='<div class="s-pr"><span>シュリンクなし</span><b>'+esc(it.b||"0")+'<small>円</small></b></div>';
+  return h?'<div class="s-prices">'+h+'</div>':"";
+}
+function fields(it){
+  var f=fl(it),h='<div class="chips">',M=[["t","t","Giá thường"],["a","p","シュリンクあり"],["b","b","シュリンクなし"]];
+  M.forEach(function(c){var on=f.indexOf(c[0])>-1;h+='<button type="button" class="chip'+(on?' on':'')+'" data-k="'+c[0]+'">'+(on?'✓ ':'+ ')+c[2]+'</button>'});
+  h+='</div>';
+  M.forEach(function(c){if(f.indexOf(c[0])>-1)h+='<label>'+c[2]+' (円)</label><input class="pr" data-f="'+c[1]+'" value="'+esc(it[c[1]]||"0")+'">'});
+  return h;
+}
 function mv(i,d){var j=i+d;if(j<0||j>=items.length)return;var t=items[i];items[i]=items[j];items[j]=t;drawList();drawSheet()}
 var dragI=null;
 $("sheet").addEventListener("dragstart",function(e){var c=e.target.closest(".s-card");if(c){dragI=+c.dataset.i;e.dataTransfer.effectAllowed="move";e.dataTransfer.setData("text","x")}});
@@ -203,7 +230,7 @@ $("bulkf").onchange=function(e){
   fs.forEach(function(f){
     shrink(f,function(u){
       var it=null;for(var i=0;i<items.length;i++){if(!items[i].img){it=items[i];break}}
-      if(!it){it={n:"",p:"0",img:""};items.push(it)}
+      if(!it){it={n:"",t:"0",f:"t",img:""};items.push(it)}
       it.img=u;var k=D.indexOf(it.n);
       if(!it.n||k>-1){it.n=f.name.replace(/\.[^.]+$/,"");if(k>0)it.p="0"}
       if(++n===fs.length){drawList();drawSheet()}
