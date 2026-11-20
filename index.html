@@ -30,6 +30,8 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .thumb{width:64px;height:64px;border:1px dashed var(--mute);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--mute);text-align:center;cursor:pointer;overflow:hidden;background-size:cover;background-position:center}
 .item .x{grid-column:1/-1;background:transparent;color:var(--mute);border:1px solid var(--line);padding:4px;font-size:12px}
 .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.mv{grid-column:1/-1;display:flex;gap:6px}.mv button{flex:1;background:transparent;color:var(--ink);border:1px solid var(--line);padding:6px;font-size:13px}
+.s-card{cursor:grab}
 .stage{min-width:0}
 #fit{margin:0 auto}
 #sheet{transform-origin:top left}
@@ -56,9 +58,30 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .s-price small{font-size:14px;font-weight:700}
 .c4 .s-name{font-size:14px}.c4 .s-price{font-size:20px}.c4 .s-price small{font-size:12px}
 .s-foot{margin-top:18px;font-size:13px;text-align:center;border-top:1px solid var(--c);padding-top:10px;white-space:pre-line}
+
+/* ===== Tự động đổi giao diện theo màn hình ===== */
+#nav,.m{display:none}
+@media(max-width:860px){
+.d{display:none}.m{display:inline}
+body{padding-bottom:calc(76px + env(safe-area-inset-bottom,0px))}
+.app{display:block;padding:8px}
+.panel{border:0;padding:8px}
+.v-view .panel{display:none}
+.v-edit .stage{position:absolute;left:-10000px;top:0;width:900px}
+#list{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.item{grid-template-columns:1fr;margin:0;padding:8px}
+.thumb{width:100%;height:auto;aspect-ratio:1/1;font-size:13px}
+.item input.n,.item input.p{padding:10px 8px}
+.mv button{padding:10px 0;font-size:16px}
+.actions{position:static;border:0;padding:12px 0}
+.actions button{padding:12px 10px}
+#nav{position:fixed;left:0;right:0;bottom:0;display:flex;gap:6px;padding:8px 8px calc(8px + env(safe-area-inset-bottom,0px));background:var(--panel);border-top:1px solid var(--line);z-index:20}
+#nav button{flex:1;padding:12px 2px;background:transparent;color:var(--ink);border:1px solid var(--line);font-size:13px}
+.v-edit #nav [data-v=edit],.v-view #nav [data-v=view],#nav #png2{background:var(--accent);color:#fff;border-color:var(--accent)}
+}
 </style>
 </head>
-<body>
+<body class="v-edit">
 <div class="app">
   <div class="panel">
     <h1>買取表 – Tạo bảng giá thu mua</h1>
@@ -75,6 +98,8 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
     </div>
     <label>Ghi chú cuối bảng</label>
     <input id="foot" value="※価格は状態により変動します。お気軽にご相談ください。">
+    <label>Chất lượng ảnh tải về</label>
+    <select id="q"><option value="2">Thường</option><option value="3" selected>Cao</option><option value="4">Rất cao</option></select>
     <h2>Sản phẩm</h2>
     <div id="list"></div>
     <div class="actions">
@@ -85,10 +110,11 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
       <button id="print" class="sec">In</button>
       <button id="reset" class="sec">Xóa hết</button>
     </div>
-    <p style="font-size:12px;color:var(--mute)">Bấm vào ô vuông để chọn ảnh. Ảnh được xử lý ngay trên máy bạn, không tải lên máy chủ. Nội dung tự lưu trên thiết bị này.</p>
+    <p style="font-size:12px;color:var(--mute)">Bấm vào ô vuông để chọn ảnh. Ảnh được xử lý ngay trên máy bạn, không tải lên máy chủ. Nội dung tự lưu trên thiết bị này. Kéo thả ô trong bảng, hoặc dùng nút ↑ ↓, để đổi chỗ.</p>
   </div>
   <div class="stage"><div id="fit"><div id="sheet"></div></div></div>
 </div>
+<nav id="nav"><button data-v="edit">Sửa</button><button data-v="view">Xem bảng</button><button id="bulk2">+ Ảnh</button><button id="png2">Tải ảnh</button></nav>
 <script>
 var items=[
  {n:"Nintendo Switch 本体",p:"20,000",img:""},
@@ -100,9 +126,9 @@ var $=function(i){return document.getElementById(i)};
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
 function drawSheet(){
   var s=$("sheet");s.style.setProperty("--c",$("color").value);
-  var cards=items.map(function(it){
+  var cards=items.map(function(it,idx){
     var bg=it.img?' style="background-image:url('+it.img+')"':'';
-    return '<div class="s-card"><div class="frame '+$("frame").value+'"'+bg+'>'+(it.img?'':'写真')+'</div>'+
+    return '<div class="s-card" draggable="true" data-i="'+idx+'"><div class="frame '+$("frame").value+'"'+bg+'>'+(it.img?'':'写真')+'</div>'+
       '<div class="s-name">'+esc(it.n)+'</div><div class="s-price">'+esc(it.p)+' <small>円</small></div></div>';
   }).join("");
   s.innerHTML='<div class="s-head"><div class="s-shop">'+esc($("shop").value)+'</div><div class="s-title">'+esc($("title").value)+
@@ -116,13 +142,15 @@ function drawList(){
     var d=document.createElement("div");d.className="item";
     d.innerHTML='<label class="thumb" style="margin:0'+(it.img?';background-image:url('+it.img+')':'')+'">'+(it.img?'':'Chọn ảnh')+
       '<input type="file" accept="image/*" hidden></label><div><label style="margin-top:0">Tên</label><input class="n" value="'+esc(it.n)+
-      '"><label>Giá (円)</label><input class="p" value="'+esc(it.p)+'"></div><button class="x">Xóa</button>';
+      '"><label>Giá (円)</label><input class="p" value="'+esc(it.p)+'"></div><div class="mv"><button class="up" aria-label="Đưa lên trước"><span class="d">↑</span><span class="m">←</span></button><button class="dn" aria-label="Đưa xuống sau"><span class="d">↓</span><span class="m">→</span></button><button class="x">Xóa</button></div>';
     d.querySelector(".n").oninput=function(e){it.n=e.target.value;drawSheet()};
     d.querySelector(".p").oninput=function(e){it.p=e.target.value;drawSheet()};
     d.querySelector("input[type=file]").onchange=function(e){
       var f=e.target.files[0];if(!f)return;
       shrink(f,function(u){it.img=u;drawList();drawSheet()})};
     d.querySelector(".x").onclick=function(){items.splice(i,1);drawList();drawSheet()};
+    d.querySelector(".up").onclick=function(){mv(i,-1)};
+    d.querySelector(".dn").onclick=function(){mv(i,1)};
     l.appendChild(d);
   });
 }
@@ -131,9 +159,9 @@ $("add").onclick=function(){items.push({n:"商品名",p:"0",img:""});drawList();
 $("print").onclick=function(){window.print()};
 $("grid16").onclick=function(){$("cols").value="4";while(items.length<16)items.push({n:"商品名",p:"0",img:""});drawList();drawSheet()};
 function exportPng(){
-  var b=$("png"),s=$("sheet"),t=s.style.transform;b.textContent="Đang tạo…";
+  var b=$("png"),s=$("sheet"),t=s.style.transform,q=Math.min(+$("q").value,Math.sqrt(16e6/(900*s.offsetHeight)));b.textContent="Đang tạo…";
   s.style.transform="none";
-  html2canvas(s,{scale:2,backgroundColor:"#fffdf6",scrollX:0,scrollY:0}).then(function(c){
+  html2canvas(s,{scale:q,backgroundColor:"#fffdf6",scrollX:0,scrollY:0}).then(function(c){
     s.style.transform=t;
     c.toBlob(function(bl){
       var f=new File([bl],"kaitori.png",{type:"image/png"});
@@ -147,7 +175,7 @@ $("png").onclick=exportPng;
 ["#1e4fa3","#1f7a4d","#b3261e","#d9650b","#6a3fa0","#c2386f","#222222"].forEach(function(c){
   var b=document.createElement("button");b.style.background=c;b.title=c;b.setAttribute("aria-label","Màu "+c);
   b.onclick=function(){$("color").value=c;drawSheet()};$("sw").appendChild(b)});
-var IDS=["shop","title","date","cols","color","frame","foot"],KEY="kaitori-v1",tm;
+var IDS=["shop","title","date","cols","color","frame","foot","q"],KEY="kaitori-v1",tm;
 function fit(){
   var s=$("sheet"),f=$("fit"),w=f.parentNode.clientWidth||900,k=Math.min(1,w/900);
   s.style.transform="scale("+k+")";f.style.width=900*k+"px";f.style.height=s.offsetHeight*k+"px";
@@ -155,13 +183,18 @@ function fit(){
 window.addEventListener("resize",fit);
 function shrink(file,cb){
   var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){
-    var k=Math.min(1,700/Math.max(im.width,im.height)),c=document.createElement("canvas");
+    var k=Math.min(1,1000/Math.max(im.width,im.height)),c=document.createElement("canvas");
     c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);
-    c.getContext("2d").drawImage(im,0,0,c.width,c.height);cb(c.toDataURL("image/jpeg",0.85))};im.src=r.result};
+    c.getContext("2d").drawImage(im,0,0,c.width,c.height);cb(c.toDataURL("image/jpeg",0.88))};im.src=r.result};
   r.readAsDataURL(file);
 }
 function save(){clearTimeout(tm);tm=setTimeout(function(){try{var o={};IDS.forEach(function(i){o[i]=$(i).value});localStorage.setItem(KEY,JSON.stringify({items:items,f:o}))}catch(e){}},400)}
 function load(){try{var d=JSON.parse(localStorage.getItem(KEY));if(d&&d.items){items=d.items;IDS.forEach(function(i){if(d.f&&d.f[i]!=null)$(i).value=d.f[i]})}}catch(e){}}
+function mv(i,d){var j=i+d;if(j<0||j>=items.length)return;var t=items[i];items[i]=items[j];items[j]=t;drawList();drawSheet()}
+var dragI=null;
+$("sheet").addEventListener("dragstart",function(e){var c=e.target.closest(".s-card");if(c){dragI=+c.dataset.i;e.dataTransfer.effectAllowed="move";e.dataTransfer.setData("text","x")}});
+$("sheet").addEventListener("dragover",function(e){if(dragI!==null)e.preventDefault()});
+$("sheet").addEventListener("drop",function(e){var c=e.target.closest(".s-card");if(!c||dragI===null)return;e.preventDefault();var j=+c.dataset.i,t=items.splice(dragI,1)[0];items.splice(j,0,t);dragI=null;drawList();drawSheet()});
 $("reset").onclick=function(){if(confirm("Xóa hết nội dung đã nhập?")){try{localStorage.removeItem(KEY)}catch(e){}location.reload()}};
 $("bulk").onclick=function(){$("bulkf").click()};
 $("bulkf").onchange=function(e){
@@ -179,6 +212,10 @@ $("bulkf").onchange=function(e){
 };
 load();drawList();drawSheet();
 if(document.fonts)document.fonts.ready.then(fit);
+function setV(v){document.body.className="v-"+v;fit();window.scrollTo(0,0)}
+document.querySelectorAll("#nav [data-v]").forEach(function(b){b.onclick=function(){setV(b.dataset.v)}});
+$("bulk2").onclick=function(){setV("edit");$("bulkf").click()};
+$("png2").onclick=exportPng;
 </script>
 </body>
 </html>
