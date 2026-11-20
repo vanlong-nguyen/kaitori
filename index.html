@@ -78,6 +78,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
     <h2>Sản phẩm</h2>
     <div id="list"></div>
     <div class="actions">
+      <button id="bulk" class="sec">Thêm nhiều ảnh</button><input id="bulkf" type="file" accept="image/*" multiple hidden>
       <button id="grid16" class="sec">Tạo bảng 4×4 (16 ô)</button>
       <button id="add">+ Thêm sản phẩm</button>
       <button id="png">Tải ảnh PNG</button>
@@ -162,6 +163,20 @@ function shrink(file,cb){
 function save(){clearTimeout(tm);tm=setTimeout(function(){try{var o={};IDS.forEach(function(i){o[i]=$(i).value});localStorage.setItem(KEY,JSON.stringify({items:items,f:o}))}catch(e){}},400)}
 function load(){try{var d=JSON.parse(localStorage.getItem(KEY));if(d&&d.items){items=d.items;IDS.forEach(function(i){if(d.f&&d.f[i]!=null)$(i).value=d.f[i]})}}catch(e){}}
 $("reset").onclick=function(){if(confirm("Xóa hết nội dung đã nhập?")){try{localStorage.removeItem(KEY)}catch(e){}location.reload()}};
+$("bulk").onclick=function(){$("bulkf").click()};
+$("bulkf").onchange=function(e){
+  var fs=Array.prototype.slice.call(e.target.files).sort(function(a,b){return a.name<b.name?-1:1}),n=0,D=["商品名","Nintendo Switch 本体","iPhone 14 128GB","ブランドバッグ"];
+  e.target.value="";
+  fs.forEach(function(f){
+    shrink(f,function(u){
+      var it=null;for(var i=0;i<items.length;i++){if(!items[i].img){it=items[i];break}}
+      if(!it){it={n:"",p:"0",img:""};items.push(it)}
+      it.img=u;var k=D.indexOf(it.n);
+      if(!it.n||k>-1){it.n=f.name.replace(/\.[^.]+$/,"");if(k>0)it.p="0"}
+      if(++n===fs.length){drawList();drawSheet()}
+    });
+  });
+};
 load();drawList();drawSheet();
 if(document.fonts)document.fonts.ready.then(fit);
 </script>
