@@ -143,6 +143,9 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .bg-sun:not(.t-lux){background:linear-gradient(180deg,#fff0a8,#fff 70%)!important}
 .bg-lav:not(.t-lux){background:linear-gradient(180deg,#e7defa,#fff 70%)!important}
 .bg-custom:not(.t-lux){background-image:none!important}
+.sv{display:flex;gap:6px;align-items:center;border:1px solid var(--line);border-radius:8px;padding:6px 8px;margin-top:6px;background:var(--field)}
+.svn{flex:1;min-width:0}.svn b{display:block;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.svn small{font-size:11px;color:var(--mute)}
+.sv button{padding:6px 10px;font-size:13px}
 /* ===== Tự động đổi giao diện theo màn hình ===== */
 #nav,.m{display:none}
 @media(max-width:860px){
@@ -169,6 +172,10 @@ body{padding-bottom:calc(76px + env(safe-area-inset-bottom,0px))}
 <div class="app">
   <div class="panel">
     <h1>買取表 – Tạo bảng giá thu mua</h1>
+    <h2 style="margin-top:4px">Bản đã lưu</h2>
+    <div style="display:flex;gap:6px"><input id="sname" placeholder="Tên bản, ví dụ: Giá tháng 11"><button type="button" id="sbtn" style="white-space:nowrap">Lưu bản này</button></div>
+    <div id="smsg" style="font-size:12px;color:var(--mute);margin:4px 0"></div>
+    <div id="saved"></div>
     <label>Tên cửa hàng</label><input id="shop" value="○○リサイクルショップ">
     <label>Tiêu đề</label><input id="title" value="買取表">
     <div class="row">
@@ -318,7 +325,7 @@ function shrink(file,cb){
     c.getContext("2d").drawImage(im,0,0,c.width,c.height);cb(c.toDataURL("image/jpeg",0.9))};im.src=r.result};
   r.readAsDataURL(file);
 }
-function save(){clearTimeout(tm);tm=setTimeout(function(){var o={};IDS.forEach(function(i){o[i]=$(i).value});try{localStorage.setItem(KEY,JSON.stringify({items:items,f:o,x:X}))}catch(e){try{localStorage.setItem(KEY,JSON.stringify({items:items.map(function(x){var y=Object.assign({},x);y.img="";y.cut="";return y}),f:o,x:{logo:X.logo,banner:""}}))}catch(e2){}}},400)}
+function save(){saveIdb();clearTimeout(tm);tm=setTimeout(function(){var o={};IDS.forEach(function(i){o[i]=$(i).value});try{localStorage.setItem(KEY,JSON.stringify({items:items,f:o,x:X}))}catch(e){try{localStorage.setItem(KEY,JSON.stringify({items:items.map(function(x){var y=Object.assign({},x);y.img="";y.cut="";return y}),f:o,x:{logo:X.logo,banner:""}}))}catch(e2){}}},400)}
 function load(){try{var d=JSON.parse(localStorage.getItem(KEY));if(d&&d.items){items=d.items;if(d.x)X=d.x;IDS.forEach(function(i){if(d.f&&d.f[i]!=null&&i!=="q")$(i).value=d.f[i]})}}catch(e){}}
 function fl(it){return it.f===undefined?"ab":it.f}
 function rows(it){
@@ -396,7 +403,60 @@ $("banB").onclick=function(){$("banf").click()};
 $("logof").onchange=function(e){var f=e.target.files[0];e.target.value="";if(f)readImg(f,500,function(u){X.logo=u;drawSheet()})};
 $("banf").onchange=function(e){var f=e.target.files[0];e.target.value="";if(f)readImg(f,1600,function(u){X.banner=u;drawSheet()})};
 $("clrImg").onclick=function(){X.logo="";X.banner="";drawSheet()};
-$("reset").onclick=function(){if(confirm("Xóa hết nội dung đã nhập?")){try{localStorage.removeItem(KEY)}catch(e){}location.reload()}};
+var DBN="kaitori-db";
+function dbo(){return new Promise(function(ok,no){
+  if(!window.indexedDB){no(new Error("no idb"));return}
+  var r=indexedDB.open(DBN,1);
+  r.onupgradeneeded=function(){r.result.createObjectStore("sheets",{keyPath:"name"})};
+  r.onsuccess=function(){ok(r.result)};r.onerror=function(){no(r.error)};
+})}
+function dbx(mode,fn){return dbo().then(function(db){return new Promise(function(ok,no){
+  var t=db.transaction("sheets",mode),st=t.objectStore("sheets"),q=fn(st);
+  t.oncomplete=function(){ok(q&&q.result);db.close()};t.onerror=t.onabort=function(){no(t.error);db.close()};
+})})}
+function smsg(t){$("smsg").textContent=t||""}
+function snapshot(){var o={};IDS.forEach(function(i){o[i]=$(i).value});return {items:items,f:o,x:X}}
+function listSaved(){
+  dbx("readonly",function(st){return st.getAll()}).then(function(a){
+    a=(a||[]).filter(function(r){return r.name.indexOf("__")!==0}).sort(function(p,q){return q.ts-p.ts});
+    var l=$("saved");l.innerHTML="";
+    a.forEach(function(r){
+      var d=document.createElement("div");d.className="sv";
+      d.innerHTML='<div class="svn"><b></b><small></small></div><button type="button" class="sec op">Mở</button><button type="button" class="sec dl">Xóa</button>';
+      d.querySelector("b").textContent=r.name;d.querySelector("small").textContent=new Date(r.ts).toLocaleString("ja-JP");
+      d.querySelector(".op").onclick=function(){openSaved(r.name)};
+      d.querySelector(".dl").onclick=function(){if(confirm("Xóa bản \""+r.name+"\"?"))dbx("readwrite",function(st){return st.delete(r.name)}).then(listSaved)};
+      l.appendChild(d);
+    });
+  }).catch(function(){smsg("Trình duyệt này không cho lưu nhiều bản (có thể đang ở chế độ ẩn danh).")});
+}
+function openSaved(n){
+  dbx("readonly",function(st){return st.get(n)}).then(function(r){
+    if(!r)return;var d=r.data;items=d.items;X=d.x||{logo:"",banner:""};
+    IDS.forEach(function(i){if(d.f&&d.f[i]!=null)$(i).value=d.f[i]});
+    drawList();drawSheet();smsg("Đã mở bản “"+n+"”. Sửa giá rồi bấm Tải ảnh PNG.");$("sname").value=n;
+  }).catch(function(){smsg("Không mở được bản này.")});
+}
+$("sbtn").onclick=function(){
+  var n=$("sname").value.trim()||("Bản "+new Date().toLocaleString("ja-JP"));
+  dbx("readonly",function(st){return st.get(n)}).then(function(old){
+    if(old&&!confirm("Đã có bản tên “"+n+"”. Ghi đè?"))return;
+    return dbx("readwrite",function(st){return st.put({name:n,ts:Date.now(),data:JSON.parse(JSON.stringify(snapshot()))})}).then(function(){smsg("Đã lưu “"+n+"”.");$("sname").value=n;listSaved()});
+  }).catch(function(){smsg("Không lưu được. Trình duyệt có thể đang chặn lưu trữ.")});
+};
+var RS=true,tm2;
+function saveIdb(){clearTimeout(tm2);tm2=setTimeout(function(){
+  if(RS)return;
+  try{dbx("readwrite",function(st){return st.put({name:"__current",ts:Date.now(),data:JSON.parse(JSON.stringify(snapshot()))})}).catch(function(){})}catch(e){}
+},500)}
+function restoreCurrent(){
+  dbx("readonly",function(st){return st.get("__current")}).then(function(r){
+    if(r&&r.data&&r.data.items){var d=r.data;items=d.items;X=d.x||{logo:"",banner:""};
+      IDS.forEach(function(i){if(d.f&&d.f[i]!=null&&i!=="q")$(i).value=d.f[i]});drawList();drawSheet()}
+  }).catch(function(){}).then(function(){RS=false});
+}
+listSaved();restoreCurrent();
+$("reset").onclick=function(){if(confirm("Xóa hết nội dung đã nhập?")){try{localStorage.removeItem(KEY)}catch(e){}dbx("readwrite",function(st){return st.delete("__current")}).catch(function(){}).then(function(){location.reload()})}};
 $("bulk").onclick=function(){$("bulkf").click()};
 $("bulkf").onchange=function(e){
   var fs=Array.prototype.slice.call(e.target.files).sort(function(a,b){return a.name<b.name?-1:1}),n=0,D=["商品名","Nintendo Switch 本体","iPhone 14 128GB","ブランドバッグ"];
