@@ -70,6 +70,13 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .c4 .s-name{font-size:14px}.c4 .s-price{font-size:20px}.c4 .s-price small{font-size:12px}
 .s-foot{margin-top:18px;font-size:13px;text-align:center;border-top:1px solid var(--c);padding-top:10px;white-space:pre-line}
 
+#out{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:50;display:flex;align-items:center;justify-content:center;padding:12px}
+#out[hidden]{display:none}
+.obox{background:var(--panel);color:var(--ink);border-radius:10px;padding:14px;max-width:560px;width:100%;max-height:100%;overflow:auto}
+.obox h2{margin:0 0 8px;font-size:16px}.obox img{width:100%;border:1px solid var(--line);display:block}
+.obox p{font-size:13px;margin:8px 0 0}
+.obox .btn{display:inline-block;background:var(--accent);color:#fff;font-weight:700;padding:10px 14px;border-radius:6px;text-decoration:none;font-size:14px}
+.oa{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 /* ===== Tự động đổi giao diện theo màn hình ===== */
 #nav,.m{display:none}
 @media(max-width:860px){
@@ -110,7 +117,7 @@ body{padding-bottom:calc(76px + env(safe-area-inset-bottom,0px))}
     <label>Ghi chú cuối bảng</label>
     <input id="foot" value="※価格は状態により変動します。お気軽にご相談ください。">
     <label>Chất lượng ảnh tải về</label>
-    <select id="q"><option value="2">Thường</option><option value="3" selected>Cao</option><option value="4">Rất cao</option></select>
+    <select id="q"><option value="2">Thường</option><option value="3">Cao</option><option value="4" selected>Rất cao</option><option value="5">Tối đa</option></select>
     <h2>Sản phẩm</h2>
     <div id="list"></div>
     <div class="actions">
@@ -125,6 +132,8 @@ body{padding-bottom:calc(76px + env(safe-area-inset-bottom,0px))}
   </div>
   <div class="stage"><div id="fit"><div id="sheet"></div></div></div>
 </div>
+<div id="out" hidden><div class="obox"><h2>Ảnh đã sẵn sàng</h2><img id="oimg" alt="Bảng 買取表"><p id="osz"></p><p id="otip"></p>
+<div class="oa"><a id="odl" class="btn" download="kaitori.png">Tải về máy</a><button id="osh" class="sec" hidden>Chia sẻ</button><button id="ox" class="sec">Đóng</button></div></div></div>
 <nav id="nav"><button data-v="edit">Sửa</button><button data-v="view">Xem bảng</button><button id="bulk2">+ Ảnh</button><button id="png2">Tải ảnh</button></nav>
 <script>
 var items=[
@@ -170,20 +179,30 @@ function drawList(){
 $("add").onclick=function(){items.push({n:"商品名",t:"0",f:"t",img:""});drawList();drawSheet()};
 $("print").onclick=function(){window.print()};
 $("grid16").onclick=function(){$("cols").value="4";while(items.length<16)items.push({n:"商品名",t:"0",f:"t",img:""});drawList();drawSheet()};
+var lastUrl=null;
 function exportPng(){
-  var b=$("png"),s=$("sheet"),t=s.style.transform,q=Math.min(+$("q").value,Math.sqrt(16e6/(900*s.offsetHeight)));b.textContent="Đang tạo…";
+  var b=$("png"),s=$("sheet"),t=s.style.transform,ua=navigator.userAgent,mob=/Android|iPhone|iPad|iPod|Mobile/i.test(ua),
+      q=Math.min(+$("q").value,Math.sqrt((mob?16e6:36e6)/(900*s.offsetHeight)));
+  function done(){b.textContent="Tải ảnh PNG";$("png2").textContent="Tải ảnh"}
+  b.textContent=$("png2").textContent="Đang tạo…";
   s.style.transform="none";
-  html2canvas(s,{scale:q,backgroundColor:"#fffdf6",scrollX:0,scrollY:0}).then(function(c){
+  html2canvas(s,{scale:q,backgroundColor:"#fffdf6",scrollX:0,scrollY:0,logging:false}).then(function(c){
     s.style.transform=t;
     c.toBlob(function(bl){
+      if(lastUrl)URL.revokeObjectURL(lastUrl);
+      lastUrl=URL.createObjectURL(bl);
       var f=new File([bl],"kaitori.png",{type:"image/png"});
-      if(navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f]}).catch(function(){})}
-      else{var a=document.createElement("a");a.download="kaitori.png";a.href=URL.createObjectURL(bl);a.click()}
-      b.textContent="Tải ảnh PNG";
+      $("oimg").src=lastUrl;$("odl").href=lastUrl;
+      $("osz").textContent="Kích thước: "+c.width+" × "+c.height+" px";
+      $("otip").textContent=/iPhone|iPad|iPod/i.test(ua)?"Nhấn giữ vào ảnh, chọn “Lưu vào Ảnh”. Hoặc bấm Chia sẻ rồi chọn “Lưu ảnh”.":mob?"Nhấn giữ vào ảnh để tải xuống, hoặc bấm “Tải về máy”. Ảnh nằm trong mục Tải xuống hoặc Thư viện.":"Bấm “Tải về máy”. Ảnh nằm trong thư mục Tải xuống (Downloads), tên file kaitori.png.";
+      $("osh").hidden=!(navigator.canShare&&navigator.canShare({files:[f]}));
+      $("osh").onclick=function(){navigator.share({files:[f]}).catch(function(){})};
+      $("out").hidden=false;done();
     },"image/png");
-  }).catch(function(){s.style.transform=t;b.textContent="Tải ảnh PNG";alert("Không tạo được ảnh. Hãy thử nút In → Lưu PDF.")});
+  }).catch(function(){s.style.transform=t;done();alert("Không tạo được ảnh. Hãy thử mức chất lượng thấp hơn, hoặc nút In → Lưu PDF.")});
 }
 $("png").onclick=exportPng;
+$("ox").onclick=function(){$("out").hidden=true};
 ["#1e4fa3","#1f7a4d","#b3261e","#d9650b","#6a3fa0","#c2386f","#222222"].forEach(function(c){
   var b=document.createElement("button");b.style.background=c;b.title=c;b.setAttribute("aria-label","Màu "+c);
   b.onclick=function(){$("color").value=c;drawSheet()};$("sw").appendChild(b)});
@@ -195,13 +214,13 @@ function fit(){
 window.addEventListener("resize",fit);
 function shrink(file,cb){
   var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){
-    var k=Math.min(1,1000/Math.max(im.width,im.height)),c=document.createElement("canvas");
+    var k=Math.min(1,1600/Math.max(im.width,im.height)),c=document.createElement("canvas");
     c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);
-    c.getContext("2d").drawImage(im,0,0,c.width,c.height);cb(c.toDataURL("image/jpeg",0.88))};im.src=r.result};
+    c.getContext("2d").drawImage(im,0,0,c.width,c.height);cb(c.toDataURL("image/jpeg",0.9))};im.src=r.result};
   r.readAsDataURL(file);
 }
-function save(){clearTimeout(tm);tm=setTimeout(function(){try{var o={};IDS.forEach(function(i){o[i]=$(i).value});localStorage.setItem(KEY,JSON.stringify({items:items,f:o}))}catch(e){}},400)}
-function load(){try{var d=JSON.parse(localStorage.getItem(KEY));if(d&&d.items){items=d.items;IDS.forEach(function(i){if(d.f&&d.f[i]!=null)$(i).value=d.f[i]})}}catch(e){}}
+function save(){clearTimeout(tm);tm=setTimeout(function(){var o={};IDS.forEach(function(i){o[i]=$(i).value});try{localStorage.setItem(KEY,JSON.stringify({items:items,f:o}))}catch(e){try{localStorage.setItem(KEY,JSON.stringify({items:items.map(function(x){var y=Object.assign({},x);y.img="";return y}),f:o}))}catch(e2){}}},400)}
+function load(){try{var d=JSON.parse(localStorage.getItem(KEY));if(d&&d.items){items=d.items;IDS.forEach(function(i){if(d.f&&d.f[i]!=null&&i!=="q")$(i).value=d.f[i]})}}catch(e){}}
 function fl(it){return it.f===undefined?"ab":it.f}
 function rows(it){
   var f=fl(it),h="";
