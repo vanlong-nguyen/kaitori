@@ -45,6 +45,12 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .frame.cut{background:#fff}.frame.cut img{object-fit:contain;padding:6px}.chip:disabled{opacity:.4}
 .s-card{cursor:grab}
 .stage{min-width:0}
+@media(min-width:861px){
+.app{height:100vh;height:100dvh;grid-template-rows:minmax(0,1fr)}
+.panel{align-self:stretch;min-height:0;overflow-y:auto;overscroll-behavior:contain}
+.stage{min-height:0;overflow-y:auto;overflow-x:hidden}
+}
+@media print{.app{height:auto!important}.stage{overflow:visible!important}}
 #fit{margin:0 auto}
 #sheet{transform-origin:top left}
 .actions{position:sticky;bottom:0;background:var(--panel);padding:10px 0 calc(10px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);z-index:5}
